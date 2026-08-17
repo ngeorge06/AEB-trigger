@@ -23,13 +23,19 @@ void setup() {
 }
 
 void loop() {
+
+  uint32_t t0 = micros(); //start time
+
   for (int i = 0; i < TOTAL; i++) {
     distances[i] = getDistance(trigPins[i], echoPins[i]);
     delay(10); // avoid cross-talk
   }
 
   serialOutput();
-  delay(200); // [optional] slows down serial output for debugging purposes
+  uint32_t t1 = micros(); //end time
+  Serial.print("Loop time: ");
+  Serial.println(t1 - t0);
+  delay(1000); // slowing down for debugging purposes.
 }
 
 long getDistance(int trigPin, int echoPin) {

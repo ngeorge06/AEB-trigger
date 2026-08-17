@@ -1,18 +1,29 @@
 #include <Arduino.h>
 
-// put function declarations here:
-int myFunction(int, int);
+const int hazards = 2;
+const int brake = 3;
 
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+  pinMode(hazards, OUTPUT);
+  pinMode(brake, OUTPUT);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-}
-
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+  digitalWrite(hazards, LOW);
+  digitalWrite(brake, LOW);
+  delay(1000);
+  digitalWrite(brake, HIGH);
+  delay(2000);
+  digitalWrite(hazards, LOW);
+  delay(200);
+  digitalWrite(hazards, HIGH);
+  delay(200);
+  digitalWrite(hazards, LOW);
+  delay(200);
+  digitalWrite(hazards, HIGH);
+  delay(200);
+  digitalWrite(hazards, LOW);
+  delay(200);
+  digitalWrite(hazards, HIGH);
+  delay(200);
 }

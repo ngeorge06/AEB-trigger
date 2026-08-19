@@ -1,12 +1,12 @@
 #include <Arduino.h>
 
-const int TOTAL = 5; // number of sensors
+const int numSensors = 5; // number of sensors
 
 // trig pin first, followed by echo pin
-const int trigPins[TOTAL] = {2,4,6,8,10};
-const int echoPins[TOTAL] = {3,5,7,9,11};
+const int trigPins[numSensors] = {2,4,6,8,10};
+const int echoPins[numSensors] = {3,5,7,9,11};
 
-long distances[TOTAL]; // array to store distance values for each sensor
+long distances[numSensors]; // array to store distance values for each sensor
 
 // define functions
 long getDistance(int trigPin, int echoPin);
@@ -16,7 +16,7 @@ void setup() {
   Serial.begin(115200);
 
   // initialise pins
-  for (int i = 0; i < TOTAL; i++) {
+  for (int i = 0; i < numSensors; i++) {
     pinMode(trigPins[i], OUTPUT);
     pinMode(echoPins[i], INPUT);
   }
@@ -26,7 +26,7 @@ void loop() {
 
   uint32_t t0 = micros(); //start time [DEBUG]
 
-  for (int i = 0; i < TOTAL; i++) {
+  for (int i = 0; i < numSensors; i++) {
     distances[i] = getDistance(trigPins[i], echoPins[i]);
     delay(10); // avoid cross-talk
   }
@@ -57,9 +57,9 @@ long getDistance(int trigPin, int echoPin) {
 }
 
 void serialOutput() {
-  for (int i = 0; i < TOTAL; i++) {
+  for (int i = 0; i < numSensors; i++) {
     Serial.print(distances[i]);
-    if (i < TOTAL - 1){
+    if (i < numSensors - 1){
       Serial.print(",");
     } 
   }

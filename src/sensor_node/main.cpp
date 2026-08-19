@@ -24,7 +24,7 @@ void setup() {
 
 void loop() {
 
-  uint32_t t0 = micros(); //start time
+  uint32_t t0 = micros(); //start time [DEBUG]
 
   for (int i = 0; i < TOTAL; i++) {
     distances[i] = getDistance(trigPins[i], echoPins[i]);
@@ -32,7 +32,7 @@ void loop() {
   }
 
   serialOutput();
-  uint32_t t1 = micros(); //end time
+  uint32_t t1 = micros(); //end time [DEBUG]
   Serial.print("Loop time: ");
   Serial.println(t1 - t0);
   delay(1000); // slowing down for debugging purposes.
@@ -50,7 +50,7 @@ long getDistance(int trigPin, int echoPin) {
   long duration = pulseIn(echoPin, HIGH, 30000); // time how long the echo pin recieves HIGH
 
   if (duration == 0) {
-    return -1; // or some other error value
+    return -1; // error value
   }
 
   return duration * 0.0343 / 2; // cm per microseconds, divided by 2 (accounting for both ways)

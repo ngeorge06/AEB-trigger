@@ -38,7 +38,6 @@ void loop() {
   uint32_t t1 = micros(); //end time 
   Serial.println(t1 - t0);
 
-  delay(1000); // slowing down for debugging purposes.
 }
 
 long getDistance(int trigPin, int echoPin) {

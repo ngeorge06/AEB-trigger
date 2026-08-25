@@ -30,13 +30,12 @@ void loop() {
 
   for (int i = 0; i < numSensors; i++) {
     distances[i] = getDistance(trigPins[i], echoPins[i]);
-    delay(10); // avoid cross-talk
+    delay(12); // avoid cross-talk, need 60ms minimum for re-trigger
   }
 
   serialOutput();
 
   uint32_t t1 = micros(); //end time 
-  Serial.print("response:");
   Serial.println(t1 - t0);
 
   delay(1000); // slowing down for debugging purposes.
@@ -64,10 +63,6 @@ long getDistance(int trigPin, int echoPin) {
 void serialOutput() {
   for (int i = 0; i < numSensors; i++) {
     Serial.print(distances[i]);
-    if (i < numSensors - 1){
-      Serial.print(",");
-    } 
+    Serial.print(",");
   }
-
-  Serial.println();
 }

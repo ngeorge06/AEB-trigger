@@ -6,7 +6,8 @@ const int numSensors = 5; // number of sensors
 const int trigPins[numSensors] = {2,4,6,8,10};
 const int echoPins[numSensors] = {3,5,7,9,11};
 
-long distances[numSensors]; // array to store distance values for each sensor
+// array to store distance values for each sensor
+long distances[numSensors]; 
 
 // define functions
 long getDistance(int trigPin, int echoPin);
@@ -24,7 +25,8 @@ void setup() {
 
 void loop() {
 
-  uint32_t t0 = micros(); //start time [DEBUG]
+  // start time (for response time calculation)
+  uint32_t t0 = micros(); 
 
   for (int i = 0; i < numSensors; i++) {
     distances[i] = getDistance(trigPins[i], echoPins[i]);
@@ -32,9 +34,11 @@ void loop() {
   }
 
   serialOutput();
-  uint32_t t1 = micros(); //end time [DEBUG]
-  Serial.print("Loop time: ");
+
+  uint32_t t1 = micros(); //end time 
+  Serial.print("response:");
   Serial.println(t1 - t0);
+
   delay(1000); // slowing down for debugging purposes.
 }
 
@@ -56,6 +60,7 @@ long getDistance(int trigPin, int echoPin) {
   return duration * 0.0343 / 2; // cm per microseconds, divided by 2 (accounting for both ways)
 }
 
+// to modify (transfer via UART instead of printing to serial monitor)
 void serialOutput() {
   for (int i = 0; i < numSensors; i++) {
     Serial.print(distances[i]);

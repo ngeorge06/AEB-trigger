@@ -1,44 +1,14 @@
 #include <Arduino.h>
+#include <SoftwareSerial.h>
+#include "protocol.h"
 
-const int numSensors = 5; // number of sensors
+const int numSensors = NUM_SENSORS; // number of sensors, from protocol.h
 
 // trig pin first, followed by echo pin
 const int trigPins[numSensors] = {2,4,6,8,10};
 const int echoPins[numSensors] = {3,5,7,9,11};
 
-// array to store distance values for each sensor
-long distances[numSensors]; 
-
-// define functions
-long getDistance(int trigPin, int echoPin);
-void serialOutput();
-
-void setup() {
-  Serial.begin(115200);
-
-  // initialise pins
-  for (int i = 0; i < numSensors; i++) {
-    pinMode(trigPins[i], OUTPUT);
-    pinMode(echoPins[i], INPUT);
-  }
-}
-
-void loop() {
-
-  // start time (for response time calculation)
-  uint32_t t0 = micros(); 
-
-  for (int i = 0; i < numSensors; i++) {
-    distances[i] = getDistance(trigPins[i], echoPins[i]);
-    delay(12); // avoid cross-talk, need 60ms minimum for re-trigger
-  }
-
-  serialOutput();
-
-  uint32_t t1 = micros(); //end time 
-  Serial.println(t1 - t0);
-
-}
+SoftwareSerial relay(12, 13); // RX, TX
 
 long getDistance(int trigPin, int echoPin) {
 
@@ -52,16 +22,44 @@ long getDistance(int trigPin, int echoPin) {
   long duration = pulseIn(echoPin, HIGH, 30000); // time how long the echo pin recieves HIGH
 
   if (duration == 0) {
-    return -1; // error value
+    return 255; // error value
   }
 
-  return duration * 0.0343 / 2; // cm per microseconds, divided by 2 (accounting for both ways)
+  long cm = duration * 0.0343 / 2; // cm per microseconds, divided by 2 (accounting for both ways)
+  if (cm > 200) {
+    return 255; // out of range
+  }
+  return (uint8_t)cm;
 }
 
-// to modify (transfer via UART instead of printing to serial monitor)
-void serialOutput() {
+void setup() {
+  relay.begin(9600);
+
+  // initialise pins
   for (int i = 0; i < numSensors; i++) {
-    Serial.print(distances[i]);
-    Serial.print(",");
+    pinMode(trigPins[i], OUTPUT);
+    pinMode(echoPins[i], INPUT);
   }
 }
+
+void loop() {
+  Frame frame; // empty frame
+
+  // get distance
+  for (int i = 0; i < numSensors; i++) {
+    frame.distances[i] = getDistance(trigPins[i], echoPins[i]);
+    delay(12); // avoid cross-talk, need 60ms minimum for re-trigger
+  }
+
+  // prepare for transfer
+  uint8_t buffer[FRAME_SIZE]; // 7 bytes
+  encodeFrame(&frame, buffer); // buffer is automatically passed as a pointer
+
+  // SEND
+  for (int i = 0; i < FRAME_SIZE; i++){
+    relay.write(buffer[i])
+  }
+}
+
+
+

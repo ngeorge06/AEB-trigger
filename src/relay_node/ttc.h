@@ -4,22 +4,21 @@
 #ifndef TTC_H 
 #define TTC_H
 
-#include <Arduino.h>
-const int numSensors = 5; // number of sensors
+#include <stdint.h>
 
-// 
-enum result : uint8_t {
-  OK = 0,
-  BRAKE = 1,
-  ABS = 2
+
+// Different states
+enum Status : uint8_t {
+  OK, BRAKE, AEB
 };
 
-// declaring update function for ttc.cpp, returns of type result (enum)
-// parameters: array of type int16_t of size numSensors (5), and a uint32_t t (time in microseconds)
-result ttcUpdate(const int16_t distances[numSensors], uint32_t t);
+struct TTCState {
+  uint8_t prevDistance; // cm, from the last call
+  uint32_t prevTime; // millis() at the last call
+  bool hasPrev; // false until the first real reading comes in
+} TTCState;
 
-int16_t ttcSpeed(void);
-int16_t ttcTime(void);
-void ttcReset(void);
+void ttcInit(TTCState *state);
+AEBStatus ttcUpdate(TTCState *state, uint8_t currentDistance);
 
 #endif
